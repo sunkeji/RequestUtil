@@ -38,10 +38,11 @@
                     .build();
         }
         return okHttpClient;
-    }`
+    }
+`
     
 ## retrofit2封装 ##
-   ` /**
+    `  /**
      * 初始化Retrofit
      */
     private static Retrofit retrofit;
@@ -66,7 +67,7 @@
         return retrofit;
     }`
 ## rxjava2封装 ##
-   `/**
+    `  /**
      * 统一请求处理，网路请求成功统一处理返回结果成功和失败的数据
      *
      * @param observable
