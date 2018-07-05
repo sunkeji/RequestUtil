@@ -20,15 +20,15 @@
     public static OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient.Builder()
-//                    .sslSocketFactory(SSLValidate.getSSLSocketFactory())
-//                    .hostnameVerifier(SSLValidate.getHostnameVerifier())//https连接添加安全认证
+                    .sslSocketFactory(SSLValidate.getSSLSocketFactory())
+                    .hostnameVerifier(SSLValidate.getHostnameVerifier())//https连接添加安全认证
                     .cache(cache)  //禁用okhttp自身的的缓存
                     .connectTimeout(timeout, TimeUnit.SECONDS)
                     .readTimeout(timeout, TimeUnit.SECONDS)
                     .writeTimeout(timeout, TimeUnit.SECONDS)//连接、读、写超时时间设置
                     .retryOnConnectionFailure(true)//错误重连
-//                    .addInterceptor(new MyInterceptor())
-//                    .addNetworkInterceptor(new DownloadInterceptor())//添加拦截器
+                   .addInterceptor(new MyInterceptor())
+                  .addNetworkInterceptor(new DownloadInterceptor())//添加拦截器
                     .addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                         @Override
                         public void log(String message) {
