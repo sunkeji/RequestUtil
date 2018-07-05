@@ -38,8 +38,7 @@
                     .build();
         }
         return okHttpClient;
-    }
-`
+    }`
     
 ## retrofit2封装 ##
     `  /**
