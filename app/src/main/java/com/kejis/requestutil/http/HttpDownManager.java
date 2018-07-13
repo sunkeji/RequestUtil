@@ -1,12 +1,17 @@
 package com.kejis.requestutil.http;
 
+import android.os.Environment;
+
 import com.kejis.requestutil.api.TestServiceApi;
 import com.kejis.requestutil.bean.DownBean;
 import com.kejis.requestutil.callback.CommonDownSubscriber;
 import com.kejis.requestutil.db.DbUtil;
 import com.kejis.requestutil.db.DownState;
 import com.kejis.requestutil.interceptor.DownloadInterceptor;
+import com.skj.wheel.util.LogUtil;
 import com.skj.wheel.util.NetUtil;
+
+import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +24,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 /**
  * ClassName:	HttpDownManager
@@ -92,9 +99,7 @@ public class HttpDownManager {
         } else {
             DownloadInterceptor interceptor = new DownloadInterceptor(subscriber);
             OkHttpClient.Builder builder = MyOkHttpClient.getOkHttpClient().newBuilder();
-            //手动创建一个OkHttpClient并设置超时时间
             builder.addNetworkInterceptor(interceptor);
-
             httpService = MyRetrofit.getRequest(TestServiceApi.class,
                     NetUtil.getBasUrl(downBean.getApkUrl()), builder.build());
             downBean.setService(httpService);
@@ -106,14 +111,15 @@ public class HttpDownManager {
                 .unsubscribeOn(Schedulers.io())
                 .subscribeOn(Schedulers.newThread())//子线程访问网络
                 .observeOn(AndroidSchedulers.mainThread())//回调到主线程
-                .map(new Function<ResponseBody, ResponseBody>() {
+                .doOnNext(new Consumer<ResponseBody>() {
                     @Override
-                    public ResponseBody apply(ResponseBody responseBody) throws Exception {
+                    public void accept(ResponseBody responseBody) throws Exception {
+                        LogUtil.i(responseBody.contentLength() + "");
                         writeCaches(responseBody, new File(downBean.getApkSavePath()));
-                        return responseBody;
                     }
                 })
                 .subscribe(subscriber);
+
     }
 
     /**
@@ -145,12 +151,61 @@ public class HttpDownManager {
     }
 
     /**
-     * 写入文件
+     * 停止全部下载
+     */
+    public void stopAllDown() {
+        for (DownBean downInfo : downBeans) {
+            stopDown(downInfo);
+        }
+        subMap.clear();
+        downBeans.clear();
+    }
+
+    /**
+     * 停止下载
+     */
+    public void stopDown(DownBean info) {
+        if (info == null) return;
+        info.setState(DownState.STOP);
+        info.getListener().onStop();
+        if (subMap.containsKey(info.getApkUrl())) {
+            CommonDownSubscriber subscriber = subMap.get(info.getApkUrl());
+            subscriber.dispose();
+            subMap.remove(info.getApkUrl());
+        }
+        /*保存数据库信息和本地文件*/
+        db.update(info);
+    }
+
+    /**
+     * 暂停全部下载
+     */
+    public void pauseAll() {
+        for (DownBean downInfo : downBeans) {
+            pause(downInfo);
+        }
+        subMap.clear();
+        downBeans.clear();
+    }
+
+
+    /**
+     * 返回全部正在下载的数据
+     *
+     * @return
+     */
+    public Set<DownBean> getDownInfos() {
+        return downBeans;
+    }
+
+
+    /**
+     * 写入文件，保存到sdcard
      *
      * @param file
      * @throws IOException
      */
-    public void writeCaches(ResponseBody responseBody, File file) {
+    public static void writeCaches(ResponseBody responseBody, File file) {
         try {
             RandomAccessFile randomAccessFile = null;
             FileChannel channelOut = null;

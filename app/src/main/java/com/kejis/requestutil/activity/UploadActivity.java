@@ -59,7 +59,7 @@ public class UploadActivity extends AppCompatActivity {
         for (int i = 0; i < 3; i++) {
             File outputFile = new File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    "" + "name2.jpg");
+                    "" + "image1.jpg");
             images.add(outputFile);
         }
         TestRequest.uploadImage(this, images, new HttpDownOnNextListener() {

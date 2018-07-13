@@ -15,6 +15,9 @@ import com.skj.wheel.util.LogUtil;
 
 import java.lang.ref.SoftReference;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -33,19 +36,19 @@ public class CommonDownSubscriber<T> extends ResourceSubscriber<T>
     //弱引用结果回调
     private SoftReference<HttpDownOnNextListener> mSubscriberOnNextListener;
     /*下载进度回掉主线程*/
-    private Handler handler;
+//    private Handler handler;
     private DownBean downBean;
 
     public CommonDownSubscriber(DownBean downBean) {
         mSubscriberOnNextListener = new SoftReference<>(downBean.getListener());
-        this.handler = new Handler(Looper.getMainLooper());
+//        this.handler = new Handler(Looper.getMainLooper());
         this.downBean = downBean;
     }
 
     public void setDownBean(DownBean downBean) {
         this.mSubscriberOnNextListener = new SoftReference<>(downBean.getListener());
         this.downBean = downBean;
-        this.handler = new Handler(Looper.getMainLooper());
+//        this.handler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -56,14 +59,15 @@ public class CommonDownSubscriber<T> extends ResourceSubscriber<T>
             downBean.setApkTotalLength(count);
         downBean.setApkDownLength(read);
         if (mSubscriberOnNextListener.get() == null || !downBean.isUpdateProgress()) return;
-        handler.post(new Runnable() {
+
+        Flowable.just(read).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Long>() {
             @Override
-            public void run() {
+            public void accept(Long aLong) throws Exception {
                 /*如果暂停或者停止状态延迟，不需要继续发送回调，影响显示*/
                 if (downBean.getState() == DownState.PAUSE || downBean.getState() == DownState.STOP)
                     return;
                 downBean.setState(DownState.DOWN);
-                mSubscriberOnNextListener.get().updateProgress(downBean.getApkDownLength(), downBean.getApkTotalLength());
+                mSubscriberOnNextListener.get().updateProgress(aLong, downBean.getApkTotalLength());
             }
         });
     }
@@ -83,10 +87,7 @@ public class CommonDownSubscriber<T> extends ResourceSubscriber<T>
             mSubscriberOnNextListener.get().onError(t);
         }
         HttpExceptionUtil.switchException(MyAppcation.mContext, t);
-        //关闭下载请求
-        HttpDownManager.getInstance().remove(downBean);
         downBean.setState(DownState.ERROR);
-        DbUtil.getInstance().update(downBean);
     }
 
     @Override
@@ -95,10 +96,7 @@ public class CommonDownSubscriber<T> extends ResourceSubscriber<T>
         if (mSubscriberOnNextListener.get() != null) {
             mSubscriberOnNextListener.get().onComplete();
         }
-        //关闭下载请求
-        HttpDownManager.getInstance().remove(downBean);
         downBean.setState(DownState.FINISH);
-        DbUtil.getInstance().update(downBean);
     }
 
     @Override
@@ -110,4 +108,5 @@ public class CommonDownSubscriber<T> extends ResourceSubscriber<T>
         }
         downBean.setState(DownState.START);
     }
+
 }

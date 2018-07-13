@@ -49,12 +49,10 @@ public class TestRequest extends MyRetrofit {
         CommonProgressSubscriber subscriber = new CommonProgressSubscriber(listener);
         DownloadInterceptor interceptor = new DownloadInterceptor(subscriber);
         OkHttpClient.Builder builder = MyOkHttpClient.getOkHttpClient().newBuilder();
-        //手动创建一个OkHttpClient并设置超时时间
         builder.addNetworkInterceptor(interceptor);
-
         TestServiceApi testApi2 = getRequest(TestServiceApi.class,
-                "http://clips.vorwaerts-gmbh.de/", builder.build());
-        MyRequest.down(testApi2.download("bytes=" + 0 + "-", "big_buck_bunny.mp4"), subscriber);
+                "http://imtt.dd.qq.com/", builder.build());
+        MyRequest.down(testApi2.download("bytes=" + 0 + "-", "16891/913981F7680E6DCA213477A32FB08084.apk"), subscriber);
     }
 
 }

@@ -49,7 +49,7 @@ public class DownActivity extends AppCompatActivity {
 
             @Override
             public void updateProgress(long readLength, long countLength) {
-                tvMsg.setText("readLength：" + readLength + "countLength：" + countLength);
+                tvMsg.setText("readLength：" + readLength + "-countLength：" + countLength);
             }
         });
     }

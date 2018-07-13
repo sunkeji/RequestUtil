@@ -22,7 +22,7 @@ import butterknife.OnClick;
 
 /**
  * ClassName:	RequestActivity
- * Function:	${TODO} 描述这个类的作用
+ * Function:	${TODO} 模拟请求借口界面
  * Reason:	${TODO} ADD REASON(可选)
  * Date:	2018/6/29 17:03
  *
@@ -55,7 +55,7 @@ public class RequestActivity extends AppCompatActivity {
         Map<String, Object> map = new HashMap<>();
         map.put("type", "yuantong");
         map.put("postid", "11111111111");
-        TestRequest.getRequest(map, new CommonResponseSubscriber<BaseBean>() {
+        TestRequest.getRequest(map, new CommonResponseSubscriber<BaseBean>(this) {
             @Override
             public void onNext(BaseBean baseBean) {
                 LogUtil.i("result:" + new Gson().toJson(baseBean).toString());

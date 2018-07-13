@@ -123,52 +123,37 @@ public class DownListAdapter extends RecyclerView.Adapter {
                 public void onNext(Object o) {
 
                 }
-            });
-//            downBean.setListener(new HttpDownOnNextListener<DownBean>() {
-//                @Override
-//                public void updateProgress(long readLength, long countLength) {
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:下载中");
-//                    ((ItemViewHolder) viewHolder).progressBar.setMax((int) countLength);
-//                    ((ItemViewHolder) viewHolder).progressBar.setProgress((int) readLength);
-//                }
-//
-//                @Override
-//                public void onNext(DownBean downBean) {
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示：下载完成/文件地址->"
-//                            + downBean.getApkSavePath());
-//                }
-//
-//                @Override
-//                public void onStart() {
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:开始下载");
-//                }
-//
-//                @Override
-//                public void onComplete() {
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:下载完成");
-//                }
-//
-//                @Override
-//                public void onError(Throwable e) {
-//                    super.onError(e);
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("失败:" + e.toString());
-//                    HttpExceptionUtil.switchException(mContext, e);
-//                }
-//
-//
-//                @Override
-//                public void onPuase() {
-//                    super.onPuase();
-//                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:暂停");
-//                }
-//
-//                @Override
-//                public void onStop() {
-//                    super.onStop();
-//                }
-//
-//            });
 
+                @Override
+                public void onStart() {
+                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:开始下载");
+                }
+
+                @Override
+                public void onComplete() {
+                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:下载完成");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    ((ItemViewHolder) viewHolder).tvMsg.setText("失败:" + e.toString());
+                    HttpExceptionUtil.switchException(mContext, e);
+                }
+
+
+                @Override
+                public void onPuase() {
+                    super.onPuase();
+                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:暂停");
+                }
+
+                @Override
+                public void onStop() {
+                    super.onStop();
+                    ((ItemViewHolder) viewHolder).tvMsg.setText("提示:删除");
+                }
+            });
         }
     }
 

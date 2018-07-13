@@ -71,6 +71,7 @@ public class MyRequest {
                 .map(new Function<ResponseBody, ResponseBody>() {
                     @Override
                     public ResponseBody apply(ResponseBody responseBody) throws Exception {
+                        LogUtil.i(responseBody.contentLength() + ">>>>>");
                         return responseBody;
                     }
                 })
@@ -79,7 +80,7 @@ public class MyRequest {
                     public void accept(ResponseBody responseBody) throws Exception {
                         LogUtil.i(responseBody.contentLength() + "");
                         writeCaches(responseBody, new File(Environment.getExternalStoragePublicDirectory
-                                (Environment.DIRECTORY_DOWNLOADS), "big_buck_bunny.mp4"));
+                                (Environment.DIRECTORY_DOWNLOADS), "shanchuan.apk"));
                     }
                 }).subscribe(subscriber);
         return observable;

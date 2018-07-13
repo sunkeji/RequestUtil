@@ -73,12 +73,12 @@ public class MFDownBCActivity extends AppCompatActivity {
         if (listData.isEmpty()) {
             for (int i = 0; i < 2; i++) {
                 File outputFile = new File(Environment.getExternalStoragePublicDirectory
-                        (Environment.DIRECTORY_DOWNLOADS), "test" + i + ".mp4");
+                        (Environment.DIRECTORY_DOWNLOADS), "test" + i + ".apk");
                 DownBean downBean = new DownBean();
                 if (i == 0)
-                    downBean.setApkUrl("http://47.104.135.91/yc.apk");
+                    downBean.setApkUrl("http://imtt.dd.qq.com/16891/1003ECB6536079D8BE30B99D07D3B106.apk");
                 else
-                    downBean.setApkUrl("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
+                    downBean.setApkUrl("http://imtt.dd.qq.com/16891/D7C2338128FB42016E1116F017BF31F0.apk");
                 downBean.setId(i);
                 downBean.setUpdateProgress(true);
                 downBean.setApkSavePath(outputFile.getAbsolutePath());
